@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, Button, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 import { cropVideo } from '../utils/cropVideo';
 import { useVideoStore } from '../store/videoStore';
+import MetadataForm from '../components/MetadataForm';
+import CropScrubber from '../components/CropScrubber';
 
 export default function MetadataScreen() {
   const { uri } = useLocalSearchParams<{ uri: string }>();
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
+  const [start, setStart] = useState(0);
+  const videoDuration = 60; // Replace with dynamic value if needed
+
   const addVideo = useVideoStore((s) => s.addVideo);
   const router = useRouter();
 
@@ -17,7 +22,7 @@ export default function MetadataScreen() {
 
     const output = `${FileSystem.documentDirectory}${Date.now()}.mp4`;
     try {
-      await cropVideo(uri, 0, 5, output);
+      await cropVideo(uri, start, 5, output);
       addVideo({ id: Date.now(), uri: output, name, desc });
       router.push('/');
     } catch (e) {
@@ -27,20 +32,19 @@ export default function MetadataScreen() {
 
   return (
     <View className="flex-1 p-4 gap-4 bg-white">
-      <TextInput
-        placeholder="Video Name"
-        value={name}
-        onChangeText={setName}
-        className="border p-2 rounded"
+      <MetadataForm
+        name={name}
+        desc={desc}
+        onNameChange={setName}
+        onDescChange={setDesc}
       />
-      <TextInput
-        placeholder="Description"
-        value={desc}
-        onChangeText={setDesc}
-        multiline
-        numberOfLines={4}
-        className="border p-2 rounded"
+
+      <CropScrubber
+        startTime={start}
+        setStartTime={setStart}
+        duration={videoDuration}
       />
+
       <Button title="Crop & Save" onPress={handleCrop} />
     </View>
   );
