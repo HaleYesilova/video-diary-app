@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import { cropVideo } from '../utils/cropVideo';
 import { useVideoStore } from '../store/videoStore';
+import { insertVideo, getAllVideos } from '../db/videoDb';
 import MetadataForm from '../components/MetadataForm';
 import CropScrubber from '../components/CropScrubber';
 
@@ -30,7 +31,7 @@ export default function MetadataScreen() {
   const [videoDuration, setVideoDuration] = useState(60);
 
   const videoRef = useRef<Video>(null);
-  const addVideo = useVideoStore((s) => s.addVideo);
+  const setVideos = useVideoStore((s) => s.setVideos);
 
   useEffect(() => {
     const getDuration = async () => {
@@ -53,7 +54,14 @@ export default function MetadataScreen() {
       const output = `${FileSystem.documentDirectory}${Date.now()}.mp4`;
       await cropVideo(uri, start, 5, output);
 
-      addVideo({ id: Date.now(), uri: output, name, desc });
+      await insertVideo(output, name, desc);
+      const videos = await getAllVideos();
+      setVideos(videos);
+
+      setName('');
+      setDesc('');
+      setStart(0);
+
       router.push('/');
     } catch (err: any) {
       Alert.alert('Validation Error', err?.errors?.[0]?.message || 'Please fill out all fields.');
@@ -66,10 +74,7 @@ export default function MetadataScreen() {
       entering="fadeInUp"
       exiting="fadeOutDown"
     >
-      <AnimatedView
-        entering="zoomIn"
-        className="rounded-xl overflow-hidden shadow-md"
-      >
+      <AnimatedView entering="zoomIn" className="rounded-xl overflow-hidden shadow-md">
         <Video
           ref={videoRef}
           source={{ uri }}

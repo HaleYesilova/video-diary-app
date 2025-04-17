@@ -3,7 +3,7 @@ import { Text, Button, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useVideoStore } from '../../store/videoStore';
 import MetadataForm from '../../components/MetadataForm';
-
+import { updateVideo, getAllVideos } from '../../db/videoDb';
 import { Animated } from 'react-native-reanimated';
 import { styled } from 'nativewind';
 
@@ -12,25 +12,30 @@ const AnimatedView = styled(Animated.View);
 export default function EditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { videos } = useVideoStore();
+  const { videos, setVideos } = useVideoStore();
 
   const video = videos.find((v) => v.id.toString() === id);
   const [name, setName] = useState(video?.name || '');
   const [desc, setDesc] = useState(video?.desc || '');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!video) return;
 
-    const updated = videos.map((v) =>
-      v.id.toString() === id ? { ...v, name, desc } : v
-    );
+    try {
+      await updateVideo(video.id, name, desc);
+      const updatedVideos = await getAllVideos();
+      setVideos(updatedVideos);
 
-    useVideoStore.setState({ videos: updated });
-    Alert.alert('Updated', 'Video information updated successfully!');
-    router.push('/');
+      Alert.alert('Updated', 'Video information updated successfully!');
+      router.push('/');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update video.');
+    }
   };
 
-  if (!video) return <Text className="p-4 text-red-500">Video not found.</Text>;
+  if (!video) {
+    return <Text className="p-4 text-red-500">Video not found.</Text>;
+  }
 
   return (
     <AnimatedView

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Text,
   FlatList,
@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useVideoStore } from '../store/videoStore';
+import { setupDatabase, getAllVideos } from '../db/videoDb'; 
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { Animated } from 'react-native-reanimated';
@@ -16,8 +17,16 @@ import { styled } from 'nativewind';
 const AnimatedView = styled(Animated.View);
 
 export default function HomeScreen() {
-  const { videos } = useVideoStore();
+  const { videos, setVideos } = useVideoStore(); 
   const router = useRouter();
+
+  
+  useEffect(() => {
+    setupDatabase();
+    getAllVideos().then((videos) => {
+      useVideoStore.getState().setVideos(videos);
+    });
+  }, []);  
 
   return (
     <AnimatedView
