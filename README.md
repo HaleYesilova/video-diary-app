@@ -1,7 +1,7 @@
-#Video Diary App
+## Video Diary App
 Minimalistic React Native app built with Expo Router that allows users to record and edit on their memories through short video segments.
 
- Features
+ ## Features
  -Import videos from your device
 
  -Crop a specific 5-second segment using a scrubber UI
@@ -16,7 +16,7 @@ Minimalistic React Native app built with Expo Router that allows users to record
 
  -All data is stored locally on the device
 
- Tech Stack
+ ## Tech Stack
  -Expo SDK 49 + Expo Router 2
 
  -React Native (0.72)
