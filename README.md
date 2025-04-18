@@ -1,3 +1,41 @@
+Video Diary App
+Minimalistic React Native app built with Expo Router that allows users to record and edit on their memories through short video segments.
+
+ Features
+ -Import videos from your device
+
+ -Crop a specific 5-second segment using a scrubber UI
+
+ -Add metadata: title & description
+
+ -Save cropped videos to a persistent list using Expo SQLite
+ 
+ -View video details and metadata
+
+ -Edit previously saved entries
+
+ -All data is stored locally on the device
+
+ Tech Stack
+ -Expo SDK 49 + Expo Router 2
+
+ -React Native (0.72)
+
+ -Zustand for global state management
+
+ -Expo SQLite for persistent local storage
+
+ -FFmpegKit for real video cropping
+
+ -Zod for form validation
+
+ -NativeWind for Tailwind-like styling
+
+ -Reanimated for smooth transitions
+
+
+
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
